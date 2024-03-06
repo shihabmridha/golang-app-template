@@ -2,9 +2,10 @@ package main
 
 import (
 	"context"
+
 	"github.com/shihabmridha/golang-app-template/internal/app"
-	"github.com/shihabmridha/golang-app-template/logging"
 	"github.com/shihabmridha/golang-app-template/pkg/config"
+	"github.com/shihabmridha/golang-app-template/pkg/logging"
 )
 
 func main() {

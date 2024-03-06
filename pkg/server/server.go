@@ -3,9 +3,10 @@ package server
 import (
 	"context"
 	"fmt"
-	"github.com/shihabmridha/golang-app-template/logging"
 	"net"
 	"net/http"
+
+	"github.com/shihabmridha/golang-app-template/pkg/logging"
 )
 
 type Server struct {

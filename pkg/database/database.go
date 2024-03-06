@@ -8,8 +8,8 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 
-	"github.com/shihabmridha/golang-app-template/logging"
 	"github.com/shihabmridha/golang-app-template/pkg/config"
+	"github.com/shihabmridha/golang-app-template/pkg/logging"
 )
 
 type Sql struct {
