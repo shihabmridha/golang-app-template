@@ -8,7 +8,7 @@ import (
 	"github.com/shihabmridha/golang-app-template/internal/user"
 	"github.com/shihabmridha/golang-app-template/pkg/config"
 	"github.com/shihabmridha/golang-app-template/pkg/database"
-	"github.com/shihabmridha/golang-app-template/pkg/server"
+	"github.com/shihabmridha/golang-app-template/pkg/http"
 )
 
 func Run(ctx context.Context, cfg *config.Config) error {
@@ -32,8 +32,9 @@ func Run(ctx context.Context, cfg *config.Config) error {
 	user.Handler(r, userSvc)
 
 	appCfg := cfg.App()
-	server := server.New(appCfg.Ip(), appCfg.Port())
-	server.ServeHttp(ctx, r)
+
+	httpServer := http.New(appCfg.Ip(), appCfg.Port())
+	httpServer.ServeHttp(ctx, r)
 
 	return nil
 }

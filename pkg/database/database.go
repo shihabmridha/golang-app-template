@@ -33,7 +33,9 @@ func New(ctx context.Context, cfg *config.Db) (*Sql, error) {
 	}
 
 	connectionString := mysqlCfg.FormatDSN()
+
 	logger.Debugln(connectionString)
+
 	// this Pings the database trying to connect
 	// use sqlx.Open() for sql.Open() semantics
 	db, err := sqlx.Connect("mysql", connectionString)
