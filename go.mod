@@ -1,6 +1,6 @@
 module github.com/shihabmridha/golang-app-template
 
-go 1.22.0
+go 1.22.1
 
 require (
 	github.com/go-chi/chi/v5 v5.0.12
@@ -14,5 +14,5 @@ require (
 
 require (
 	github.com/ajg/form v1.5.1 // indirect
-	go.uber.org/multierr v1.10.0 // indirect
+	go.uber.org/multierr v1.11.0 // indirect
 )
