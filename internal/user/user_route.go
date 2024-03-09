@@ -2,22 +2,38 @@ package user
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
+	"github.com/shihabmridha/golang-app-template/internal/api"
 )
 
-func Handler(r *chi.Mux, usrSvc *Service) {
-	r.Get("/user", func(w http.ResponseWriter, r *http.Request) {
-		users, _ := usrSvc.Get()
-		res, _ := json.Marshal(users)
+func Handler(r *api.Router, usrSvc *Service) {
+	handler := r.Handler()
+	render := r.Renderer()
 
-		w.WriteHeader(http.StatusOK)
-		w.Write(res)
+	handler.Get("/user", func(w http.ResponseWriter, r *http.Request) {
+		users, _ := usrSvc.Get()
+		fmt.Println(users)
+
+		render.RenderJSON(w, http.StatusOK, users)
 	})
 
-	r.Post("/user", func(w http.ResponseWriter, r *http.Request) {
+	handler.Post("/user", func(w http.ResponseWriter, r *http.Request) {
+		body := &User{}
+		d := json.NewDecoder(r.Body)
+		d.DisallowUnknownFields()
+
+		if err := d.Decode(body); err != nil {
+			// fmt.Println(err)
+			// w.WriteHeader(http.StatusBadRequest)
+
+			render.RenderJSON(w, http.StatusBadRequest, err)
+			return
+		}
+
+		fmt.Println(body)
+
 		usrSvc.Create()
-		w.WriteHeader(http.StatusAccepted)
 	})
 }

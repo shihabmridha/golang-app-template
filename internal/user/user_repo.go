@@ -14,7 +14,7 @@ func NewRepo(sql *database.Sql) *Repository {
 	return &Repository{db: sql}
 }
 
-func (r *Repository) Get() (*[]User, error) {
+func (r *Repository) Get() ([]User, error) {
 	users := []User{}
 	err := r.db.Select(&users, "SELECT * FROM user")
 
@@ -22,7 +22,7 @@ func (r *Repository) Get() (*[]User, error) {
 		return nil, fmt.Errorf("UserRepository - Get - r.db.Select: %w", err)
 	}
 
-	return &users, nil
+	return users, nil
 }
 
 func (r *Repository) Create(user User) (int64, error) {

@@ -26,7 +26,7 @@ func Run(ctx context.Context, cfg *config.Config) error {
 	userSvc := user.NewSvc(*userRepo)
 
 	// Initialize chi router and register middlewares
-	r := api.Init()
+	r := api.NewRouter()
 
 	// REST handler
 	user.Handler(r, userSvc)
@@ -34,7 +34,7 @@ func Run(ctx context.Context, cfg *config.Config) error {
 	appCfg := cfg.App()
 
 	httpServer := http.New(appCfg.Ip(), appCfg.Port())
-	httpServer.ServeHttp(ctx, r)
+	httpServer.ServeHttp(ctx, r.Handler())
 
 	return nil
 }

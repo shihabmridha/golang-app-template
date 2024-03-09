@@ -12,7 +12,7 @@ func NewSvc(r Repository) *Service {
 	return &Service{usrRepo: r}
 }
 
-func (s *Service) Get() (*[]User, error) {
+func (s *Service) Get() ([]User, error) {
 	users, err := s.usrRepo.Get()
 
 	if err != nil {

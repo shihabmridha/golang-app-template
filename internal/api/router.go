@@ -1,27 +1,38 @@
 package api
 
 import (
-	"net/http"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
-	"github.com/go-chi/render"
+	"github.com/shihabmridha/golang-app-template/pkg/render"
 )
 
-func Init() *chi.Mux {
+type Router struct {
+	handler  *chi.Mux
+	renderer *render.Renderer
+}
+
+func NewRouter() *Router {
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RedirectSlashes)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.RealIP)
+	r.Use(middleware.Compress(5))
 	r.Use(middleware.Heartbeat("/health"))
-	r.Use(render.SetContentType(render.ContentTypeJSON))
+	r.Use(middleware.AllowContentType("application/json"))
 	cors.AllowAll().Handler(r)
 
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("welcome"))
-	})
+	return &Router{
+		handler:  r,
+		renderer: render.NewRenderer(),
+	}
+}
 
-	return r
+func (r *Router) Handler() *chi.Mux {
+	return r.handler
+}
+
+func (r *Router) Renderer() *render.Renderer {
+	return r.renderer
 }
