@@ -14,13 +14,13 @@ type Router struct {
 
 func NewRouter() *Router {
 	r := chi.NewRouter()
-	r.Use(middleware.RequestID)
+
 	r.Use(middleware.RedirectSlashes)
 	r.Use(middleware.Recoverer)
-	r.Use(middleware.RealIP)
 	r.Use(middleware.Compress(5))
 	r.Use(middleware.Heartbeat("/health"))
 	r.Use(middleware.AllowContentType("application/json"))
+
 	cors.AllowAll().Handler(r)
 
 	return &Router{
@@ -29,10 +29,7 @@ func NewRouter() *Router {
 	}
 }
 
-func (r *Router) Handler() *chi.Mux {
-	return r.handler
-}
-
-func (r *Router) Renderer() *render.Renderer {
-	return r.renderer
+// GetRouterAndRenderer route handler and renderer
+func (r *Router) GetRouterAndRenderer() (*chi.Mux, *render.Renderer) {
+	return r.handler, r.renderer
 }

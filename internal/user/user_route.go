@@ -2,38 +2,42 @@ package user
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/shihabmridha/golang-app-template/internal/api"
 )
 
 func Handler(r *api.Router, usrSvc *Service) {
-	handler := r.Handler()
-	render := r.Renderer()
+	handler, render := r.GetRouterAndRenderer()
 
 	handler.Get("/user", func(w http.ResponseWriter, r *http.Request) {
-		users, _ := usrSvc.Get()
-		fmt.Println(users)
+		users, _ := usrSvc.GetAll()
 
 		render.RenderJSON(w, http.StatusOK, users)
 	})
 
 	handler.Post("/user", func(w http.ResponseWriter, r *http.Request) {
-		body := &User{}
+		body := User{}
 		d := json.NewDecoder(r.Body)
 		d.DisallowUnknownFields()
 
-		if err := d.Decode(body); err != nil {
-			// fmt.Println(err)
-			// w.WriteHeader(http.StatusBadRequest)
-
+		if err := d.Decode(&body); err != nil {
 			render.RenderJSON(w, http.StatusBadRequest, err)
 			return
 		}
 
-		fmt.Println(body)
+		if err := usrSvc.Create(body); err != nil {
+			render.RenderJSON(w, http.StatusBadRequest, err)
+			return
+		}
+	})
 
-		usrSvc.Create()
+	handler.Get("/user/activate", func(w http.ResponseWriter, r *http.Request) {
+		activationCode := r.URL.Query().Get("code")
+
+		if err := usrSvc.Activate(activationCode); err != nil {
+			render.RenderJSON(w, http.StatusBadRequest, err)
+			return
+		}
 	})
 }

@@ -3,7 +3,6 @@ package database
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -16,8 +15,8 @@ type Sql struct {
 	*sqlx.DB
 }
 
-func New(ctx context.Context, cfg *config.Db) (*Sql, error) {
-	logger := logging.FromContext(ctx)
+func New(ctx *context.Context, cfg *config.Db) (*Sql, error) {
+	logger := logging.FromContext(*ctx)
 
 	addr := fmt.Sprintf("%s:%s", cfg.Host, cfg.Port)
 
@@ -40,10 +39,11 @@ func New(ctx context.Context, cfg *config.Db) (*Sql, error) {
 	// use sqlx.Open() for sql.Open() semantics
 	db, err := sqlx.Connect("mysql", connectionString)
 	if err != nil {
-		log.Fatalln(err)
+		logger.Fatalf("failed to connect to db. error: %w", err)
+		return nil, fmt.Errorf("failed to connect to db. error: %w", err)
 	}
 
-	logger.Infof("connected to database")
+	logger.Info("connected to database")
 
 	return &Sql{db}, nil
 }

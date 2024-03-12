@@ -15,7 +15,7 @@ func main() {
 	logger := logging.NewLoggerFromEnv().With("version", cfg.App().Version())
 	ctx = logging.WithLogger(ctx, logger)
 
-	err := app.Run(ctx, cfg)
+	err := app.Run(&ctx, cfg)
 
 	if err != nil {
 		logger.Fatal(err)

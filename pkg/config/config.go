@@ -18,6 +18,9 @@ type (
 		url     string
 		port    string
 		ip      string
+
+		jwtSecret            string
+		activationCodeSecret string
 	}
 
 	Db struct {
@@ -51,16 +54,18 @@ func dbConfig() Db {
 
 func New() *Config {
 	if err := godotenv.Load(); err != nil {
-		panic("error loading .env file")
+		panic("error loading .env file.")
 	}
 
 	cfg := &Config{
 		app: App{
-			name:    os.Getenv("APP_NAME"),
-			version: os.Getenv("APP_VERSION"),
-			url:     os.Getenv("APP_URL"),
-			port:    os.Getenv("APP_PORT"),
-			ip:      os.Getenv("APP_IP"),
+			name:                 os.Getenv("APP_NAME"),
+			version:              os.Getenv("APP_VERSION"),
+			url:                  os.Getenv("APP_URL"),
+			port:                 os.Getenv("APP_PORT"),
+			ip:                   os.Getenv("APP_IP"),
+			jwtSecret:            os.Getenv("JWT_SECRET"),
+			activationCodeSecret: os.Getenv("EMAIL_ACTIVATION_CODE_SECRET"),
 		},
 		db: dbConfig(),
 	}
@@ -84,4 +89,10 @@ func (a *App) Port() string {
 }
 func (a *App) Version() string {
 	return a.version
+}
+func (a *App) JwtSecret() string {
+	return a.jwtSecret
+}
+func (a *App) ActivationCodeSecret() string {
+	return a.activationCodeSecret
 }

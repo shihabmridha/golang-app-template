@@ -11,30 +11,31 @@ import (
 	"github.com/shihabmridha/golang-app-template/pkg/http"
 )
 
-func Run(ctx context.Context, cfg *config.Config) error {
+func Run(ctx *context.Context, cfg *config.Config) error {
 	db, err := database.New(ctx, cfg.Db())
 	if err != nil {
-		return fmt.Errorf("app - Run - database.New: %w", err)
+		return fmt.Errorf("terminating due to db connection issue. error: %w", err)
 	}
 
 	defer db.Close()
 
+	appCfg := cfg.App()
+
 	// Repos
-	userRepo := user.NewRepo(db)
+	userRepo := user.NewRepo(ctx, db)
 
 	// Services
-	userSvc := user.NewSvc(*userRepo)
+	userSvc := user.NewSvc(appCfg, userRepo)
 
 	// Initialize chi router and register middlewares
 	r := api.NewRouter()
+	handler, _ := r.GetRouterAndRenderer()
 
 	// REST handler
 	user.Handler(r, userSvc)
 
-	appCfg := cfg.App()
-
 	httpServer := http.New(appCfg.Ip(), appCfg.Port())
-	httpServer.ServeHttp(ctx, r.Handler())
+	httpServer.ServeHttp(*ctx, handler)
 
 	return nil
 }

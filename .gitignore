@@ -1,3 +1,4 @@
-tmp
+_tmp
+_testdata
 build
 .env
