@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/shihabmridha/golang-app-template/internal/api"
+	"github.com/shihabmridha/golang-app-template/internal/auth"
 	"github.com/shihabmridha/golang-app-template/internal/user"
 	"github.com/shihabmridha/golang-app-template/pkg/config"
 	"github.com/shihabmridha/golang-app-template/pkg/database"
@@ -25,7 +26,8 @@ func Run(ctx *context.Context, cfg *config.Config) error {
 	userRepo := user.NewRepo(ctx, db)
 
 	// Services
-	userSvc := user.NewSvc(appCfg, userRepo)
+	authSvc := auth.NewService(appCfg, userRepo)
+	userSvc := user.NewService(appCfg, userRepo)
 
 	// Initialize chi router and register middlewares
 	r := api.NewRouter()
@@ -33,6 +35,7 @@ func Run(ctx *context.Context, cfg *config.Config) error {
 
 	// REST handler
 	user.Handler(r, userSvc)
+	auth.Handler(r, authSvc)
 
 	httpServer := http.New(appCfg.Ip(), appCfg.Port())
 	httpServer.ServeHttp(*ctx, handler)

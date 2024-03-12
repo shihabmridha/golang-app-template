@@ -15,7 +15,7 @@ type Service struct {
 	usrRepo *Repository
 }
 
-func NewSvc(cfg *config.App, r *Repository) *Service {
+func NewService(cfg *config.App, r *Repository) *Service {
 	return &Service{
 		appCfg:  cfg,
 		usrRepo: r,
@@ -37,11 +37,6 @@ func newActivationCode(username, secret string) (string, error) {
 
 	return sha, nil
 }
-
-// func checkPasswordHash(password, hash string) bool {
-// 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-// 	return err == nil
-// }
 
 func (s *Service) GetAll() ([]User, error) {
 	users, err := s.usrRepo.GetAll()
