@@ -1,23 +1,29 @@
-package user
+package api
 
 import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/shihabmridha/golang-app-template/internal/api"
+	"github.com/go-chi/chi/v5"
+	"github.com/shihabmridha/golang-app-template/internal/auth"
+	"github.com/shihabmridha/golang-app-template/internal/user"
 )
 
-func Handler(r *api.Router, usrSvc *Service) {
+func UserHandler(r *Router, usrSvc *user.Service, authSvc *auth.Service) {
 	handler, render := r.GetRouterAndRenderer()
 
-	handler.Get("/user", func(w http.ResponseWriter, r *http.Request) {
-		users, _ := usrSvc.GetAll()
+	handler.Group(func(r chi.Router) {
+		r.Use(authSvc.Verify(render))
 
-		render.RenderJSON(w, http.StatusOK, users)
+		r.Get("/user", func(w http.ResponseWriter, r *http.Request) {
+			users, _ := usrSvc.GetAll()
+
+			render.RenderJSON(w, http.StatusOK, users)
+		})
 	})
 
 	handler.Post("/user", func(w http.ResponseWriter, r *http.Request) {
-		body := User{}
+		body := user.User{}
 		d := json.NewDecoder(r.Body)
 		d.DisallowUnknownFields()
 

@@ -8,3 +8,5 @@ type UserLogin struct {
 type AuthToken struct {
 	AccessToken string `json:"accessToken"`
 }
+
+type TokenUserId int64

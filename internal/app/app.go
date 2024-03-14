@@ -34,8 +34,8 @@ func Run(ctx *context.Context, cfg *config.Config) error {
 	handler, _ := r.GetRouterAndRenderer()
 
 	// REST handler
-	user.Handler(r, userSvc)
-	auth.Handler(r, authSvc)
+	api.AuthHandler(r, authSvc)
+	api.UserHandler(r, userSvc, authSvc)
 
 	httpServer := http.New(appCfg.Ip(), appCfg.Port())
 	httpServer.ServeHttp(*ctx, handler)
