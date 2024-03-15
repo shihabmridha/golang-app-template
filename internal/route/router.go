@@ -1,4 +1,4 @@
-package api
+package route
 
 import (
 	"github.com/go-chi/chi/v5"
@@ -8,28 +8,28 @@ import (
 )
 
 type Router struct {
-	handler  *chi.Mux
+	mux      *chi.Mux
 	renderer *render.Renderer
 }
 
 func NewRouter() *Router {
-	r := chi.NewRouter()
+	mux := chi.NewRouter()
 
-	r.Use(middleware.RedirectSlashes)
-	r.Use(middleware.Recoverer)
-	r.Use(middleware.Compress(5))
-	r.Use(middleware.Heartbeat("/health"))
-	r.Use(middleware.AllowContentType("application/json"))
+	mux.Use(middleware.RedirectSlashes)
+	mux.Use(middleware.Recoverer)
+	mux.Use(middleware.Compress(5))
+	mux.Use(middleware.Heartbeat("/ping"))
+	mux.Use(middleware.AllowContentType("application/json"))
 
-	cors.AllowAll().Handler(r)
+	cors.AllowAll().Handler(mux)
 
 	return &Router{
-		handler:  r,
+		mux:      mux,
 		renderer: render.NewRenderer(),
 	}
 }
 
 // GetRouterAndRenderer route handler and renderer
 func (r *Router) GetRouterAndRenderer() (*chi.Mux, *render.Renderer) {
-	return r.handler, r.renderer
+	return r.mux, r.renderer
 }

@@ -1,4 +1,4 @@
-package api
+package route
 
 import (
 	"encoding/json"
@@ -10,9 +10,9 @@ import (
 )
 
 func UserHandler(r *Router, usrSvc *user.Service, authSvc *auth.Service) {
-	handler, render := r.GetRouterAndRenderer()
+	mux, render := r.GetRouterAndRenderer()
 
-	handler.Group(func(r chi.Router) {
+	mux.Group(func(r chi.Router) {
 		r.Use(authSvc.Verify(render))
 
 		r.Get("/user", func(w http.ResponseWriter, r *http.Request) {
@@ -22,7 +22,7 @@ func UserHandler(r *Router, usrSvc *user.Service, authSvc *auth.Service) {
 		})
 	})
 
-	handler.Post("/user", func(w http.ResponseWriter, r *http.Request) {
+	mux.Post("/user", func(w http.ResponseWriter, r *http.Request) {
 		body := user.User{}
 		d := json.NewDecoder(r.Body)
 		d.DisallowUnknownFields()
@@ -38,7 +38,7 @@ func UserHandler(r *Router, usrSvc *user.Service, authSvc *auth.Service) {
 		}
 	})
 
-	handler.Get("/user/activate", func(w http.ResponseWriter, r *http.Request) {
+	mux.Get("/user/activate", func(w http.ResponseWriter, r *http.Request) {
 		activationCode := r.URL.Query().Get("code")
 
 		if err := usrSvc.Activate(activationCode); err != nil {

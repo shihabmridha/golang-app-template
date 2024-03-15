@@ -1,6 +1,7 @@
 package config
 
 import (
+	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -40,7 +41,7 @@ func dbConfig() Db {
 	name := os.Getenv("DB_NAME")
 
 	if host == "" || port == "" || username == "" || password == "" || name == "" {
-		panic("database credential missing")
+		log.Panic("database credential missing")
 	}
 
 	return Db{
@@ -54,7 +55,7 @@ func dbConfig() Db {
 
 func New() *Config {
 	if err := godotenv.Load(); err != nil {
-		panic("error loading .env file.")
+		log.Panic("error loading .env file.")
 	}
 
 	cfg := &Config{
@@ -90,8 +91,8 @@ func (a *App) Port() string {
 func (a *App) Version() string {
 	return a.version
 }
-func (a *App) JwtSecret() string {
-	return a.jwtSecret
+func (a *App) JwtSecret() []byte {
+	return []byte(a.jwtSecret)
 }
 func (a *App) ActivationCodeSecret() string {
 	return a.activationCodeSecret

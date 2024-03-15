@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/shihabmridha/golang-app-template/internal/api"
 	"github.com/shihabmridha/golang-app-template/internal/auth"
+	"github.com/shihabmridha/golang-app-template/internal/route"
 	"github.com/shihabmridha/golang-app-template/internal/user"
 	"github.com/shihabmridha/golang-app-template/pkg/config"
 	"github.com/shihabmridha/golang-app-template/pkg/database"
@@ -30,12 +30,12 @@ func Run(ctx *context.Context, cfg *config.Config) error {
 	userSvc := user.NewService(appCfg, userRepo)
 
 	// Initialize chi router and register middlewares
-	r := api.NewRouter()
+	r := route.NewRouter()
 	handler, _ := r.GetRouterAndRenderer()
 
 	// REST handler
-	api.AuthHandler(r, authSvc)
-	api.UserHandler(r, userSvc, authSvc)
+	route.AuthHandler(r, authSvc)
+	route.UserHandler(r, userSvc, authSvc)
 
 	httpServer := http.New(appCfg.Ip(), appCfg.Port())
 	httpServer.ServeHttp(*ctx, handler)

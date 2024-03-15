@@ -1,4 +1,4 @@
-package api
+package route
 
 import (
 	"encoding/json"
@@ -8,9 +8,9 @@ import (
 )
 
 func AuthHandler(r *Router, authSvc *auth.Service) {
-	handler, render := r.GetRouterAndRenderer()
+	mux, render := r.GetRouterAndRenderer()
 
-	handler.Post("/login", func(w http.ResponseWriter, r *http.Request) {
+	mux.Post("/login", func(w http.ResponseWriter, r *http.Request) {
 		body := auth.UserLogin{}
 		d := json.NewDecoder(r.Body)
 		d.DisallowUnknownFields()
@@ -20,7 +20,7 @@ func AuthHandler(r *Router, authSvc *auth.Service) {
 			return
 		}
 
-		token, err := authSvc.GetToken(body)
+		token, err := authSvc.Login(body)
 
 		if err != nil {
 			render.RenderJSON(w, http.StatusBadRequest, err)
