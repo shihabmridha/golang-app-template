@@ -9,7 +9,7 @@ import (
 	"github.com/shihabmridha/golang-app-template/internal/user"
 )
 
-func UserHandler(r *Router, usrSvc *user.Service, authSvc *auth.Service) {
+func UserHandler(r *Router, authSvc auth.Service, usrSvc user.Service) {
 	mux, render := r.GetRouterAndRenderer()
 
 	mux.Group(func(r chi.Router) {

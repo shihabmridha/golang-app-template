@@ -18,12 +18,12 @@ import (
 const UserId TokenUserId = iota
 
 type Service struct {
-	appCfg  *config.App
-	usrRepo *user.Repository
+	appCfg  config.App
+	usrRepo user.Repository
 }
 
-func NewService(cfg *config.App, r *user.Repository) *Service {
-	return &Service{
+func NewService(cfg config.App, r user.Repository) Service {
+	return Service{
 		appCfg:  cfg,
 		usrRepo: r,
 	}

@@ -14,10 +14,10 @@ type Repository struct {
 	logger *zap.SugaredLogger
 }
 
-func NewRepo(ctx *context.Context, sql *database.Sql) *Repository {
-	return &Repository{
+func NewRepo(ctx context.Context, sql *database.Sql) Repository {
+	return Repository{
 		db:     sql,
-		logger: logging.FromContext(*ctx),
+		logger: logging.FromContext(ctx),
 	}
 }
 

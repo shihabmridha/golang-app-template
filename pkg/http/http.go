@@ -3,46 +3,33 @@ package http
 import (
 	"context"
 	"fmt"
-	"net"
 	"net/http"
 
-	"github.com/shihabmridha/golang-app-template/pkg/logging"
+	"github.com/shihabmridha/golang-app-template/internal/auth"
+	"github.com/shihabmridha/golang-app-template/internal/route"
+	"github.com/shihabmridha/golang-app-template/internal/user"
+	"github.com/shihabmridha/golang-app-template/pkg/config"
+	"github.com/shihabmridha/golang-app-template/pkg/database"
 )
 
-type Server struct {
-	ip   string
-	port string
-}
+func New(ctx context.Context, appCfg config.App, db *database.Sql) *http.Server {
+	// Repos
+	userRepo := user.NewRepo(ctx, db)
 
-func New(ip, port string) *Server {
-	return &Server{
-		ip:   ip,
-		port: port,
-	}
-}
+	// Services
+	authSvc := auth.NewService(appCfg, userRepo)
+	userSvc := user.NewService(appCfg, userRepo)
 
-func (s *Server) ServeHttp(ctx context.Context, handler http.Handler) error {
-	logger := logging.FromContext(ctx)
+	// Initialize chi router and register middlewares
+	r := route.NewRouter()
+	handler, _ := r.GetRouterAndRenderer()
 
-	logger.Infof("listening on :%s", s.port)
+	// REST handler
+	route.AuthHandler(r, authSvc)
+	route.UserHandler(r, authSvc, userSvc)
 
-	addr := fmt.Sprintf(s.ip + ":" + s.port)
+	addr := fmt.Sprintf(appCfg.Ip() + ":" + appCfg.Port())
+	server := &http.Server{Addr: addr, Handler: handler}
 
-	if err := http.ListenAndServe(addr, handler); err != nil {
-		return fmt.Errorf("server - server.ServeHttp: %w", err)
-	}
-
-	return nil
-}
-
-func (s *Server) Addr() string {
-	return net.JoinHostPort(s.ip, s.port)
-}
-
-func (s *Server) Ip() string {
-	return s.ip
-}
-
-func (s *Server) Port() string {
-	return s.port
+	return server
 }

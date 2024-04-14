@@ -7,7 +7,7 @@ import (
 	"github.com/shihabmridha/golang-app-template/internal/auth"
 )
 
-func AuthHandler(r *Router, authSvc *auth.Service) {
+func AuthHandler(r *Router, authSvc auth.Service) {
 	mux, render := r.GetRouterAndRenderer()
 
 	mux.Post("/login", func(w http.ResponseWriter, r *http.Request) {

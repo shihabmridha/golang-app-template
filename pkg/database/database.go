@@ -15,8 +15,8 @@ type Sql struct {
 	*sqlx.DB
 }
 
-func New(ctx *context.Context, cfg *config.Db) (*Sql, error) {
-	logger := logging.FromContext(*ctx)
+func New(ctx context.Context, cfg *config.Db) (*Sql, error) {
+	logger := logging.FromContext(ctx)
 
 	addr := fmt.Sprintf("%s:%s", cfg.Host, cfg.Port)
 
@@ -46,10 +46,4 @@ func New(ctx *context.Context, cfg *config.Db) (*Sql, error) {
 	logger.Info("connected to database")
 
 	return &Sql{db}, nil
-}
-
-func (db *Sql) Close() {
-	if db != nil {
-		db.Close()
-	}
 }
