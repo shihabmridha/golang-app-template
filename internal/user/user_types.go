@@ -10,14 +10,13 @@ type User struct {
 	Email          string     `db:"email" json:"email"`
 	Passowrd       string     `db:"password" json:"password"`
 	IsActive       bool       `db:"isActive" json:"isActive"`
-	ActivationCode string     `db:"activationCode"`
+	ActivationCode string     `db:"activationCode" json:"activationCode,omitempty"`
 	BirthDate      *time.Time `db:"birthDate" json:"birthDate"`
 	CreatedAt      *time.Time `db:"createdAt" json:"createdAt"`
 	UpdatedAt      *time.Time `db:"updatedAt" json:"updatedAt"`
 }
 
-// Hide password and activation code
+// Hide password
 func (u *User) Normalize() {
 	u.Passowrd = ""
-	u.ActivationCode = ""
 }

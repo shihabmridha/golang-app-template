@@ -15,17 +15,17 @@ type Sql struct {
 	*sqlx.DB
 }
 
-func New(ctx context.Context, cfg *config.Db) (*Sql, error) {
+func New(ctx context.Context, cfg config.Config) (*Sql, error) {
 	logger := logging.FromContext(ctx)
 
-	addr := fmt.Sprintf("%s:%s", cfg.Host, cfg.Port)
+	addr := fmt.Sprintf("%s:%s", cfg.DbHost, cfg.DbPort)
 
 	mysqlCfg := mysql.Config{
-		User:                 cfg.Username,
-		Passwd:               cfg.Password,
+		User:                 cfg.DbUsername,
+		Passwd:               cfg.DbPassword,
 		Net:                  "tcp",
 		Addr:                 addr,
-		DBName:               cfg.Name,
+		DBName:               cfg.DbName,
 		AllowNativePasswords: true,
 		TLSConfig:            "skip-verify",
 		ParseTime:            true,

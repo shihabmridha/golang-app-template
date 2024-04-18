@@ -7,93 +7,47 @@ import (
 	"github.com/joho/godotenv"
 )
 
-type (
-	Config struct {
-		app App
-		db  Db
-	}
+type Config struct {
+	Name    string
+	Version string
+	Url     string
+	Port    string
+	Ip      string
 
-	App struct {
-		name    string
-		version string
-		url     string
-		port    string
-		ip      string
+	JwtSecret            string
+	ActivationCodeSecret string
 
-		jwtSecret            string
-		activationCodeSecret string
-	}
-
-	Db struct {
-		Host     string
-		Port     string
-		Username string
-		Password string
-		Name     string
-	}
-)
-
-func dbConfig() Db {
-	port := os.Getenv("DB_PORT")
-	host := os.Getenv("DB_HOST")
-	username := os.Getenv("DB_USERNAME")
-	password := os.Getenv("DB_PASSWORD")
-	name := os.Getenv("DB_NAME")
-
-	if host == "" || port == "" || username == "" || password == "" || name == "" {
-		log.Panic("database credential missing")
-	}
-
-	return Db{
-		Host:     host,
-		Port:     port,
-		Username: username,
-		Password: password,
-		Name:     name,
-	}
+	DbHost     string
+	DbPort     string
+	DbUsername string
+	DbPassword string
+	DbName     string
 }
 
-func New() *Config {
+func New() Config {
 	if err := godotenv.Load(); err != nil {
 		log.Panic("error loading .env file.")
 	}
 
-	cfg := &Config{
-		app: App{
-			name:                 os.Getenv("APP_NAME"),
-			version:              os.Getenv("APP_VERSION"),
-			url:                  os.Getenv("APP_URL"),
-			port:                 os.Getenv("APP_PORT"),
-			ip:                   os.Getenv("APP_IP"),
-			jwtSecret:            os.Getenv("JWT_SECRET"),
-			activationCodeSecret: os.Getenv("EMAIL_ACTIVATION_CODE_SECRET"),
-		},
-		db: dbConfig(),
+	cfg := Config{
+		Name:                 os.Getenv("APP_NAME"),
+		Version:              os.Getenv("APP_VERSION"),
+		Url:                  os.Getenv("APP_URL"),
+		Port:                 os.Getenv("APP_PORT"),
+		Ip:                   os.Getenv("APP_IP"),
+		JwtSecret:            os.Getenv("JWT_SECRET"),
+		ActivationCodeSecret: os.Getenv("EMAIL_ACTIVATION_CODE_SECRET"),
+
+		DbHost:     os.Getenv("DB_HOST"),
+		DbPort:     os.Getenv("DB_PORT"),
+		DbUsername: os.Getenv("DB_USERNAME"),
+		DbPassword: os.Getenv("DB_PASSWORD"),
+		DbName:     os.Getenv("DB_NAME"),
+	}
+
+	if cfg.DbHost == "" || cfg.DbPort == "" || cfg.DbPassword == "" || cfg.DbUsername == "" || cfg.DbName == "" {
+		log.Panic("database credential missing")
 	}
 
 	return cfg
-}
-
-func (c *Config) App() *App {
-	return &c.app
-}
-
-func (c *Config) Db() *Db {
-	return &c.db
-}
-
-func (a *App) Ip() string {
-	return a.ip
-}
-func (a *App) Port() string {
-	return a.port
-}
-func (a *App) Version() string {
-	return a.version
-}
-func (a *App) JwtSecret() []byte {
-	return []byte(a.jwtSecret)
-}
-func (a *App) ActivationCodeSecret() string {
-	return a.activationCodeSecret
 }

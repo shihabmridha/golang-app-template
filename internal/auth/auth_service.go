@@ -18,13 +18,13 @@ import (
 const UserId TokenUserId = iota
 
 type Service struct {
-	appCfg  config.App
+	cfg     config.Config
 	usrRepo user.Repository
 }
 
-func NewService(cfg config.App, r user.Repository) Service {
+func NewService(cfg config.Config, r user.Repository) Service {
 	return Service{
-		appCfg:  cfg,
+		cfg:     cfg,
 		usrRepo: r,
 	}
 }
@@ -44,7 +44,7 @@ func (s *Service) Login(login UserLogin) (*AuthToken, error) {
 		return nil, fmt.Errorf("inactive user")
 	}
 
-	token, _ := createToken(s.appCfg.JwtSecret(), user.Id)
+	token, _ := createToken(s.cfg.JwtSecret, user.Id)
 
 	return token, nil
 }
@@ -60,7 +60,7 @@ func (s *Service) Verify(render *render.Renderer) func(http.Handler) http.Handle
 				return
 			}
 
-			userId, err := parseJwt(s.appCfg.JwtSecret(), jwtToken)
+			userId, err := parseJwt(s.cfg.JwtSecret, jwtToken)
 
 			if err != nil {
 				render.RenderJSON(w, http.StatusUnauthorized, nil)
@@ -74,19 +74,20 @@ func (s *Service) Verify(render *render.Renderer) func(http.Handler) http.Handle
 	}
 }
 
+// Private methods
 func isValidPassword(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }
 
-func newJwt(secret []byte, id int64) (string, error) {
+func newJwt(secret string, id int64) (string, error) {
 	return jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
 		Subject:   fmt.Sprintf("%d", id),
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
-	}).SignedString(secret)
+	}).SignedString([]byte(secret))
 }
 
-func createToken(secret []byte, userId int64) (*AuthToken, error) {
+func createToken(secret string, userId int64) (*AuthToken, error) {
 	jwt, err := newJwt(secret, userId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate jwt token. error: %w", err)
@@ -110,14 +111,14 @@ func getTokenFromHeader(r *http.Request) (string, error) {
 	return parts[1], nil
 }
 
-func parseJwt(secret []byte, jwtToken string) (int64, error) {
+func parseJwt(secret string, jwtToken string) (int64, error) {
 	token, err := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC)
 		if !ok {
 			return nil, fmt.Errorf("failed to validate signing method")
 		}
 
-		return secret, nil
+		return []byte(secret), nil
 	})
 
 	if err != nil {

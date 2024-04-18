@@ -15,7 +15,7 @@ Install goose for database migration.
 go install github.com/pressly/goose/v3/cmd/goose@latest
 ```
 
-Run `go run ./cmd/api` to start the server.
+Run `go run ./cmd/api` to start the api server.
 
 The server can be accessed in this url: `http://localhost:3000`
 

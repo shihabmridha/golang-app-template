@@ -11,13 +11,13 @@ import (
 )
 
 type Service struct {
-	appCfg  config.App
+	cfg     config.Config
 	usrRepo Repository
 }
 
-func NewService(cfg config.App, r Repository) Service {
+func NewService(cfg config.Config, r Repository) Service {
 	return Service{
-		appCfg:  cfg,
+		cfg:     cfg,
 		usrRepo: r,
 	}
 }
@@ -67,7 +67,7 @@ func (s *Service) Create(user User) error {
 		return fmt.Errorf("failed to create password hash. error: %w", err)
 	}
 
-	activationCode, err := newActivationCode(user.Username, s.appCfg.ActivationCodeSecret())
+	activationCode, err := newActivationCode(user.Username, s.cfg.ActivationCodeSecret)
 	if err != nil {
 		return fmt.Errorf("failed to create password hash. error: %w", err)
 	}
