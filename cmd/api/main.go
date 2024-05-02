@@ -17,6 +17,9 @@ import (
 )
 
 func main() {
+	exitSignal := make(chan os.Signal, 1)
+	signal.Notify(exitSignal, os.Interrupt)
+
 	ctx := context.Background()
 	cfg := config.New()
 
@@ -47,14 +50,11 @@ func main() {
 		}
 	}()
 
-	// Gracefull shutdown
-	exitSignal := make(chan os.Signal, 1)
-	signal.Notify(exitSignal, os.Interrupt)
-
 	// Wait for interrupt signal
 	<-exitSignal
 
-	timeoutCtx, done := context.WithTimeout(context.Background(), 30*time.Second)
+	timeoutCtx, done := context.WithTimeout(ctx, 30*time.Second)
+	defer done()
 
 	if err := server.Shutdown(timeoutCtx); err != nil {
 		logger.Errorf("HTTP server shutdown error: %s", err)
@@ -66,6 +66,4 @@ func main() {
 		logger.Errorf("Failed to close database: %s", err)
 	}
 	logger.Infoln("Database connection closed")
-
-	done()
 }
