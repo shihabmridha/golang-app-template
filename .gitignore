@@ -1,4 +1,5 @@
 _tmp
 _testdata
+.idx/.data
 build
 .env
